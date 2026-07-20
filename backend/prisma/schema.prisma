@@ -1,0 +1,279 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Role {
+  STUDENT
+  FACULTY
+  RECRUITER
+  PLACEMENT_OFFICER
+  ADMIN
+}
+
+enum ApplicationStatus {
+  APPLIED
+  SHORTLISTED
+  INTERVIEWING
+  OFFERED
+  REJECTED
+}
+
+enum JobStatus {
+  DRAFT
+  OPEN
+  CLOSED
+}
+
+enum DriveStatus {
+  UPCOMING
+  ONGOING
+  COMPLETED
+  CANCELLED
+}
+
+model User {
+  id            String         @id @default(uuid())
+  email         String         @unique
+  passwordHash  String?
+  name          String
+  avatarUrl     String?
+  role          Role           @default(STUDENT)
+  isActive      Boolean        @default(true)
+  isVerified    Boolean        @default(false)
+  googleId      String?        @unique
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  refreshTokens RefreshToken[]
+  studentProfile StudentProfile?
+  jobPostings   JobPosting[]   @relation("RecruiterJobs")
+  placementDrives PlacementDrive[] @relation("OfficerDrives")
+  notifications Notification[]
+  auditLogs     AuditLog[]
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  revokedAt DateTime?
+  createdAt DateTime @default(now())
+}
+
+model StudentProfile {
+  id             String      @id @default(uuid())
+  userId         String      @unique
+  user           User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  registerNumber String      @unique
+  department     String
+  batchYear      Int
+  currentCgpa    Float       @default(0.0)
+  tenthMarks     Float?
+  twelfthMarks   Float?
+  diplomaMarks   Float?
+  bio            String?
+  linkedinUrl    String?
+  githubUrl      String?
+  portfolioUrl   String?
+  resumeUrl      String?
+  atsScore       Float?      @default(0.0)
+  tierCategory   String?     @default("Unassigned")
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
+  academicRecords AcademicRecord[]
+  studentSkills   StudentSkill[]
+  projects        Project[]
+  experiences     Experience[]
+  certifications  Certification[]
+  codingProfiles  CodingProfile[]
+  employabilityScores EmployabilityScore[]
+  skillGaps       SkillGapAnalysis[]
+  jobApplications JobApplication[]
+}
+
+model AcademicRecord {
+  id               String         @id @default(uuid())
+  studentProfileId String
+  studentProfile   StudentProfile @relation(fields: [studentProfileId], references: [id], onDelete: Cascade)
+  semester         Int
+  sgpa             Float
+  backlogCount     Int            @default(0)
+  createdAt        DateTime       @default(now())
+
+  @@unique([studentProfileId, semester])
+}
+
+model Skill {
+  id          String         @id @default(uuid())
+  name        String         @unique
+  category    String         // Core CS, Web, Mobile, Cloud, AI/ML, Soft Skills
+  demandLevel String         @default("High") // High, Medium, Low
+  createdAt   DateTime       @default(now())
+
+  studentSkills StudentSkill[]
+}
+
+model StudentSkill {
+  id                String         @id @default(uuid())
+  studentProfileId  String
+  studentProfile    StudentProfile @relation(fields: [studentProfileId], references: [id], onDelete: Cascade)
+  skillId           String
+  skill             Skill          @relation(fields: [skillId], references: [id], onDelete: Cascade)
+  proficiency       Int            @default(1) // 1 to 5
+  verifiedByFaculty Boolean        @default(false)
+  createdAt         DateTime       @default(now())
+
+  @@unique([studentProfileId, skillId])
+}
+
+model Project {
+  id               String         @id @default(uuid())
+  studentProfileId String
+  studentProfile   StudentProfile @relation(fields: [studentProfileId], references: [id], onDelete: Cascade)
+  title            String
+  description      String
+  techStack        String[]
+  repoUrl          String?
+  liveUrl          String?
+  starsCount       Int            @default(0)
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+}
+
+model Experience {
+  id               String         @id @default(uuid())
+  studentProfileId String
+  studentProfile   StudentProfile @relation(fields: [studentProfileId], references: [id], onDelete: Cascade)
+  companyName      String
+  role             String
+  type             String         // Internship, Full-time, Freelance
+  startDate        DateTime
+  endDate          DateTime?
+  description      String
+  createdAt        DateTime       @default(now())
+}
+
+model Certification {
+  id               String         @id @default(uuid())
+  studentProfileId String
+  studentProfile   StudentProfile @relation(fields: [studentProfileId], references: [id], onDelete: Cascade)
+  title            String
+  issuer           String
+  issueDate        DateTime
+  expiryDate       DateTime?
+  credentialUrl    String?
+  createdAt        DateTime       @default(now())
+}
+
+model CodingProfile {
+  id               String         @id @default(uuid())
+  studentProfileId String
+  studentProfile   StudentProfile @relation(fields: [studentProfileId], references: [id], onDelete: Cascade)
+  platform         String         // LeetCode, CodeChef, HackerRank, Codeforces, GeeksforGeeks, GitHub
+  username         String
+  rating           Int            @default(0)
+  globalRank       Int            @default(0)
+  problemsSolved   Int            @default(0)
+  streak           Int            @default(0)
+  verifiedAt       DateTime       @default(now())
+
+  @@unique([studentProfileId, platform])
+}
+
+model EmployabilityScore {
+  id               String         @id @default(uuid())
+  studentProfileId String
+  studentProfile   StudentProfile @relation(fields: [studentProfileId], references: [id], onDelete: Cascade)
+  overallScore     Float
+  technicalScore   Float
+  projectScore     Float
+  codingScore      Float
+  academicScore    Float
+  predictedTier    String         // Tier 1, Tier 2, Mass Recruiter, Need Improvement
+  shapFactors      Json           // Positive and negative factors breakdown
+  generatedAt      DateTime       @default(now())
+}
+
+model SkillGapAnalysis {
+  id                 String         @id @default(uuid())
+  studentProfileId   String
+  studentProfile     StudentProfile @relation(fields: [studentProfileId], references: [id], onDelete: Cascade)
+  targetRole         String
+  matchingPercentage Float
+  missingSkills      String[]
+  recommendedCourses Json           // List of suggested learning resources
+  generatedAt        DateTime       @default(now())
+}
+
+model JobPosting {
+  id             String           @id @default(uuid())
+  recruiterId    String
+  recruiter      User             @relation("RecruiterJobs", fields: [recruiterId], references: [id], onDelete: Cascade)
+  title          String
+  companyName    String
+  description    String
+  requiredSkills String[]
+  minCgpa        Float            @default(6.0)
+  maxBacklogs    Int              @default(0)
+  salaryRange    String
+  location       String
+  status         JobStatus        @default(OPEN)
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+
+  applications   JobApplication[]
+}
+
+model JobApplication {
+  id               String            @id @default(uuid())
+  jobPostingId     String
+  jobPosting       JobPosting        @relation(fields: [jobPostingId], references: [id], onDelete: Cascade)
+  studentProfileId String
+  studentProfile   StudentProfile    @relation(fields: [studentProfileId], references: [id], onDelete: Cascade)
+  status           ApplicationStatus @default(APPLIED)
+  appliedAt        DateTime          @default(now())
+
+  @@unique([jobPostingId, studentProfileId])
+}
+
+model PlacementDrive {
+  id                  String      @id @default(uuid())
+  title               String
+  companyName         String
+  visitDate           DateTime
+  minCgpa             Float       @default(6.5)
+  eligibleDepartments String[]
+  status              DriveStatus @default(UPCOMING)
+  officerId           String
+  officer             User        @relation("OfficerDrives", fields: [officerId], references: [id], onDelete: Cascade)
+  createdAt           DateTime    @default(now())
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  message   String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  action    String
+  entity    String
+  details   String
+  ipAddress String?
+  createdAt DateTime @default(now())
+}
