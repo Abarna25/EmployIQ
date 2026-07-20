@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { api } from '../../../services/api'
+import { api } from '@/services/api'
 import { Briefcase, Plus, Trash2, Calendar, MapPin, Loader2, Building2 } from 'lucide-react'
 
 const fadeUp = { hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0, transition: { duration: 0.4 } } }
@@ -11,7 +11,7 @@ export default function ExperiencesPage() {
   const queryClient = useQueryClient()
   const { data: experiences, isLoading } = useQuery({
     queryKey: ['studentExperiences'],
-    queryFn: () => api.get('/portfolio/experiences').then((r) => r.data.data?.experiences || []),
+    queryFn: () => api.get('/portfolio/experiences').then((r: any) => r.data.data?.experiences || []),
   })
 
   const [showForm, setShowForm] = useState(false)

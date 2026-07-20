@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { studentApi } from '../../../services/endpoints'
+import { studentApi } from '@/services/endpoints'
 import { Code2, Plus, Award, Loader2 } from 'lucide-react'
 
 const fadeUp = { hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0, transition: { duration: 0.4 } } }
@@ -13,7 +13,7 @@ export default function SkillsPage() {
   const queryClient = useQueryClient()
   const { data, isLoading } = useQuery({
     queryKey: ['studentProfile'],
-    queryFn: () => studentApi.getProfile().then((r) => r.data.data?.profile),
+    queryFn: () => studentApi.getProfile().then((r: any) => r.data.data?.profile),
   })
 
   const [showForm, setShowForm] = useState(false)

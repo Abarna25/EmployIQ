@@ -1,8 +1,8 @@
 import { motion } from 'framer-motion'
 import { useQuery } from '@tanstack/react-query'
-import { api } from '../../../services/api'
-import StatCard from '../../../components/ui/StatCard'
-import ProgressRing from '../../../components/ui/ProgressRing'
+import { api } from '@/services/api'
+import StatCard from '@/components/ui/StatCard'
+import ProgressRing from '@/components/ui/ProgressRing'
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid,
   AreaChart, Area,
@@ -36,7 +36,7 @@ const upcomingDrives = [
 export default function PlacementOfficerDashboard() {
   const { data, isLoading } = useQuery({
     queryKey: ['placementStats'],
-    queryFn: () => api.get('/analytics/placement').then((r) => r.data.data),
+    queryFn: () => api.get('/analytics/placement').then((r: any) => r.data.data),
   })
 
   if (isLoading) {

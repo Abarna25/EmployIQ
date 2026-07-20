@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { studentApi } from '../../../services/endpoints'
+import { studentApi } from '@/services/endpoints'
 import { User, Linkedin, Github, Globe, BookOpen, Save, Loader2, MapPin, GraduationCap } from 'lucide-react'
 
 const fadeUp = { hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0, transition: { duration: 0.4 } } }
@@ -11,7 +11,7 @@ export default function ProfilePage() {
   const queryClient = useQueryClient()
   const { data, isLoading } = useQuery({
     queryKey: ['studentProfile'],
-    queryFn: () => studentApi.getProfile().then((r) => r.data.data?.profile),
+    queryFn: () => studentApi.getProfile().then((r: any) => r.data.data?.profile),
   })
 
   const [form, setForm] = useState({
@@ -176,7 +176,7 @@ export default function ProfilePage() {
           { label: '12th Marks', value: data?.twelfthMarks ? `${data.twelfthMarks}%` : 'N/A' },
           { label: 'ATS Score', value: data?.atsScore ? `${data.atsScore}%` : 'N/A' },
           { label: 'Skills Count', value: data?.studentSkills?.length || 0 },
-        ].map((s) => (
+        ].map((s: any) => (
           <div key={s.label} className="glass-card p-4 text-center">
             <p className="text-lg font-bold text-white">{s.value}</p>
             <p className="text-[10px] text-slate-500">{s.label}</p>

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { useAuthStore } from '../../store/authStore'
+import { useAuthStore } from '@/store/authStore'
 import { BrainCircuit, Mail, Lock, Eye, EyeOff, ArrowRight, Loader2 } from 'lucide-react'
 
 export default function LoginPage() {
@@ -60,7 +60,7 @@ export default function LoginPage() {
               { label: 'Students Placed', val: '2,400+' },
               { label: 'Partner Companies', val: '180+' },
               { label: 'Avg. ATS Score', val: '87%' },
-            ].map((s) => (
+            ].map((s: any) => (
               <div key={s.label} className="text-center">
                 <p className="text-xl font-bold text-white">{s.val}</p>
                 <p className="text-[10px] text-slate-500 mt-0.5">{s.label}</p>

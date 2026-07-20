@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { useAuthStore } from '../../store/authStore'
-import { UserRole } from '../../types'
+import { useAuthStore } from '@/store/authStore'
+import { UserRole } from '@/types'
 import { BrainCircuit, Mail, Lock, User, ArrowRight, Loader2, GraduationCap, Building2, Briefcase, Shield } from 'lucide-react'
 
 const roles: Array<{ value: UserRole; label: string; icon: any; desc: string }> = [

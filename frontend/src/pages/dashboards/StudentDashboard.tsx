@@ -24,7 +24,7 @@ const fadeUp = {
 export default function StudentDashboard() {
   const { data, isLoading } = useQuery({
     queryKey: ['studentProfile'],
-    queryFn: () => studentApi.getProfile().then((r) => r.data.data?.profile),
+    queryFn: () => studentApi.getProfile().then((r: any) => r.data.data?.profile),
   })
 
   const profile = data
@@ -40,7 +40,7 @@ export default function StudentDashboard() {
   ]
 
   const semGpa = profile?.academicRecords?.length
-    ? profile.academicRecords.map((r) => ({ semester: `S${r.semester}`, gpa: r.sgpa }))
+    ? profile.academicRecords.map((r: any) => ({ semester: `S${r.semester}`, gpa: r.sgpa }))
     : [
         { semester: 'S1', gpa: 8.2 }, { semester: 'S2', gpa: 8.5 },
         { semester: 'S3', gpa: 8.8 }, { semester: 'S4', gpa: 9.0 },
@@ -91,7 +91,7 @@ export default function StudentDashboard() {
         <StatCard
           title="Projects"
           value={profile?.projects?.length || 2}
-          subtitle={`${profile?.codingProfiles?.reduce((a, c) => a + c.problemsSolved, 0) || 710}+ problems solved`}
+          subtitle={`${profile?.codingProfiles?.reduce((a: any, c: any) => a + c.problemsSolved, 0) || 710}+ problems solved`}
           icon={<FolderGit2 className="w-5 h-5" />}
           color="cyan"
         />
@@ -177,7 +177,7 @@ export default function StudentDashboard() {
           </h3>
           <div className="flex flex-wrap gap-2">
             {(profile?.studentSkills?.length
-              ? profile.studentSkills.map((s) => ({
+              ? profile.studentSkills.map((s: any) => ({
                   name: s.skill.name,
                   level: s.proficiency,
                   verified: s.verifiedByFaculty,
@@ -189,7 +189,7 @@ export default function StudentDashboard() {
                   { name: 'PostgreSQL', level: 4, verified: true },
                   { name: 'Docker', level: 3, verified: false },
                 ]
-            ).map((s) => (
+            ).map((s: any) => (
               <span
                 key={s.name}
                 className={`badge ${s.verified ? 'badge-success' : 'badge-brand'}`}
@@ -211,7 +211,7 @@ export default function StudentDashboard() {
               'Strong Academic Record (CGPA 8.85) +12.5%',
               'High Competitive Coding Rating (1850) +15.0%',
               'Solid Practical Portfolio (2 projects) +10.0%',
-            ]).map((f, i) => (
+            ]).map((f: any, i: any) => (
               <div key={i} className="flex items-start gap-2 text-xs">
                 <ArrowUpRight className="w-3.5 h-3.5 text-emerald-400 shrink-0 mt-0.5" />
                 <span className="text-slate-300">{f}</span>
@@ -219,7 +219,7 @@ export default function StudentDashboard() {
             ))}
             {(score?.shapFactors?.negative_factors || [
               'No industry internship recorded -8.0%',
-            ]).map((f, i) => (
+            ]).map((f: any, i: any) => (
               <div key={i} className="flex items-start gap-2 text-xs">
                 <ArrowUpRight className="w-3.5 h-3.5 text-rose-400 shrink-0 mt-0.5 rotate-180" />
                 <span className="text-slate-300">{f}</span>

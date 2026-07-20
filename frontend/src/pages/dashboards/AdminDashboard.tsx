@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion'
 import { useQuery } from '@tanstack/react-query'
-import { api } from '../../../services/api'
-import StatCard from '../../../components/ui/StatCard'
+import { api } from '@/services/api'
+import StatCard from '@/components/ui/StatCard'
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid,
   PieChart, Pie, Cell,
@@ -29,7 +29,7 @@ const recentAuditLogs = [
 export default function AdminDashboard() {
   const { data, isLoading } = useQuery({
     queryKey: ['systemMetrics'],
-    queryFn: () => api.get('/analytics/system').then((r) => r.data.data),
+    queryFn: () => api.get('/analytics/system').then((r: any) => r.data.data),
   })
 
   if (isLoading) {
@@ -64,7 +64,7 @@ export default function AdminDashboard() {
       <motion.div variants={fadeUp} className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard title="Total Users" value={data?.totalUsers || 0} subtitle="Registered accounts" icon={<Users className="w-5 h-5" />} color="brand" />
         <StatCard title="System Health" value={data?.systemHealth || 'Optimal'} subtitle="All services running" icon={<Activity className="w-5 h-5" />} color="emerald" />
-        <StatCard title="Uptime (s)" value={data?.uptimeSeconds || 0} subtitle="Server uptime" icon={<Clock className="w-5 h-5" />} color="cyan" />
+        <StatCard title="Uptime (s: any)" value={data?.uptimeSeconds || 0} subtitle="Server uptime" icon={<Clock className="w-5 h-5" />} color="cyan" />
         <StatCard title="Active Jobs" value="BullMQ" subtitle="Async queues running" icon={<Server className="w-5 h-5" />} color="amber" />
       </motion.div>
 

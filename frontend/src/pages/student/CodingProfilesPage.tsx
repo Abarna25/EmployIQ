@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { api } from '../../../services/api'
+import { api } from '@/services/api'
 import { Code2, Plus, RefreshCw, Trophy, Hash, Flame, Loader2 } from 'lucide-react'
 
 const fadeUp = { hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0, transition: { duration: 0.4 } } }
@@ -20,7 +20,7 @@ export default function CodingProfilesPage() {
   const queryClient = useQueryClient()
   const { data, isLoading } = useQuery({
     queryKey: ['studentProfile'],
-    queryFn: () => api.get('/students/profile').then((r) => r.data.data?.profile),
+    queryFn: () => api.get('/students/profile').then((r: any) => r.data.data?.profile),
   })
 
   const [showForm, setShowForm] = useState(false)

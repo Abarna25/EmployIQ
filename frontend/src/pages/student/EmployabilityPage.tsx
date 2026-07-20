@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { api } from '../../../services/api'
+import { api } from '@/services/api'
 import { BrainCircuit, Loader2, Target, TrendingUp, AlertTriangle, ArrowUpRight, Zap, Target as TargetIcon } from 'lucide-react'
-import ProgressRing from '../../../components/ui/ProgressRing'
+import ProgressRing from '@/components/ui/ProgressRing'
 
 const fadeUp = { hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0, transition: { duration: 0.4 } } }
 const stagger = { hidden: {}, show: { transition: { staggerChildren: 0.08 } } }
@@ -14,7 +14,7 @@ export default function EmployabilityPage() {
 
   const { data, isLoading } = useQuery({
     queryKey: ['studentProfile'],
-    queryFn: () => api.get('/students/profile').then((r) => r.data.data?.profile),
+    queryFn: () => api.get('/students/profile').then((r: any) => r.data.data?.profile),
   })
 
   const score = data?.employabilityScores?.[0]

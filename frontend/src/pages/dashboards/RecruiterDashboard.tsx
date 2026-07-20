@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { useQuery } from '@tanstack/react-query'
-import { api } from '../../../services/api'
+import { api } from '@/services/api'
 import { Users, Search, Filter, Briefcase, Download, Building2, MapPin, Map, Globe, Shield, Star, AlertTriangle, MessageSquare } from 'lucide-react'
-import ProgressRing from '../../../components/ui/ProgressRing'
+import ProgressRing from '@/components/ui/ProgressRing'
 
 const fadeUp = { hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0, transition: { duration: 0.4 } } }
 const stagger = { hidden: {}, show: { transition: { staggerChildren: 0.08 } } }
@@ -19,7 +19,7 @@ export default function RecruiterDashboard() {
     queryFn: () => 
       api.get('/recruiters/candidates', {
         params: { search: searchTerm, minCgpa, tierCategory: tierFilter }
-      }).then((r) => r.data.data),
+      }).then((r: any) => r.data.data),
   })
 
   const candidates = data?.candidates || []
