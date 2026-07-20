@@ -34,9 +34,9 @@ export const createApp = (): Express => {
   // Swagger Documentation
   setupSwagger(app);
 
-  // Health check
-  app.get('/health', (req, res) => {
-    res.json({ status: 'ok', timestamp: new Date(), service: 'employiq-backend' });
+  // Health check endpoints
+  app.get(['/', '/health'], (req, res) => {
+    res.status(200).json({ status: 'ok', timestamp: new Date(), service: 'employiq-backend' });
   });
 
   // API Routes
