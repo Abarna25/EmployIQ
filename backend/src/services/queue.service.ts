@@ -6,6 +6,10 @@ import { logger } from '../config/logger';
 
 const connection = new IORedis(process.env.REDIS_URL || 'redis://localhost:6379', { maxRetriesPerRequest: null });
 
+connection.on('error', (err) => {
+  logger.error(`Redis connection error: ${err.message}`);
+});
+
 // --- Queues ---
 export const emailQueue = new Queue('emailQueue', { connection });
 export const auditQueue = new Queue('auditQueue', { connection });
@@ -31,6 +35,10 @@ emailWorker.on('failed', (job, err) => {
   logger.error(`Email job ${job?.id} has failed with ${err.message}`);
 });
 
+emailWorker.on('error', (err) => {
+  logger.error(`Email worker error: ${err.message}`);
+});
+
 // 2. Audit Log Worker (Writes logs to DB asynchronously)
 const auditWorker = new Worker(
   'auditQueue',
@@ -47,6 +55,10 @@ const auditWorker = new Worker(
   },
   { connection }
 );
+
+auditWorker.on('error', (err) => {
+  logger.error(`Audit worker error: ${err.message}`);
+});
 
 // --- Expose Push Functions ---
 
