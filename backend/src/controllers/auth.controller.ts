@@ -67,11 +67,11 @@ export class AuthController {
     });
 
     const accessToken = jwt.sign({ userId: user.id, role: user.role }, env.JWT_SECRET, {
-      expiresIn: env.JWT_EXPIRES_IN,
+      expiresIn: env.JWT_EXPIRES_IN as any,
     });
 
     const refreshToken = jwt.sign({ userId: user.id }, env.JWT_REFRESH_SECRET, {
-      expiresIn: env.JWT_REFRESH_EXPIRES_IN,
+      expiresIn: env.JWT_REFRESH_EXPIRES_IN as any,
     });
 
     await prisma.refreshToken.create({
@@ -115,11 +115,11 @@ export class AuthController {
     }
 
     const accessToken = jwt.sign({ userId: user.id, role: user.role }, env.JWT_SECRET, {
-      expiresIn: env.JWT_EXPIRES_IN,
+      expiresIn: env.JWT_EXPIRES_IN as any,
     });
 
     const refreshToken = jwt.sign({ userId: user.id }, env.JWT_REFRESH_SECRET, {
-      expiresIn: env.JWT_REFRESH_EXPIRES_IN,
+      expiresIn: env.JWT_REFRESH_EXPIRES_IN as any,
     });
 
     await prisma.refreshToken.create({
@@ -169,7 +169,7 @@ export class AuthController {
       }
 
       const newAccessToken = jwt.sign({ userId: user.id, role: user.role }, env.JWT_SECRET, {
-        expiresIn: env.JWT_EXPIRES_IN,
+        expiresIn: env.JWT_EXPIRES_IN as any,
       });
 
       return res.json({

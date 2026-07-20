@@ -46,20 +46,9 @@ export class AIController {
 
       const aiData = await response.json();
 
-      // Upsert the employability score in the database
-      const score = await prisma.employabilityScore.upsert({
-        where: { studentProfileId: student.id },
-        update: {
-          overallScore: aiData.overall_score,
-          academicScore: aiData.academic_score,
-          projectScore: aiData.project_score,
-          codingScore: aiData.coding_score,
-          technicalScore: aiData.technical_score,
-          predictedTier: aiData.predicted_tier,
-          shapFactors: aiData.shap_factors,
-          lastEvaluated: new Date(),
-        },
-        create: {
+      // Create a new employability score entry in the database
+      const score = await prisma.employabilityScore.create({
+        data: {
           studentProfileId: student.id,
           overallScore: aiData.overall_score,
           academicScore: aiData.academic_score,
@@ -122,7 +111,7 @@ export class AIController {
         data: {
           studentProfileId: student.id,
           targetRole: targetRole || 'Software Engineer',
-          matchPercentage: aiData.match_percentage,
+          matchingPercentage: aiData.match_percentage,
           missingSkills: aiData.missing_skills,
           recommendedCourses: aiData.recommended_courses,
         },

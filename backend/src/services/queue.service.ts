@@ -4,7 +4,7 @@ import { emailService } from './email.service';
 import { prisma } from '../config/db';
 import { logger } from '../config/logger';
 
-const connection = new IORedis(process.env.REDIS_URL || 'redis://localhost:6379');
+const connection = new IORedis(process.env.REDIS_URL || 'redis://localhost:6379', { maxRetriesPerRequest: null });
 
 // --- Queues ---
 export const emailQueue = new Queue('emailQueue', { connection });
@@ -35,13 +35,12 @@ emailWorker.on('failed', (job, err) => {
 const auditWorker = new Worker(
   'auditQueue',
   async (job) => {
-    const { userId, action, entity, level, details } = job.data;
+    const { userId, action, entity, details } = job.data;
     await prisma.auditLog.create({
       data: {
         userId,
         action,
         entity,
-        level,
         details,
       },
     });

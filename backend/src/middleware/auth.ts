@@ -3,14 +3,20 @@ import jwt from 'jsonwebtoken';
 import { env } from '../config/env';
 import { prisma } from '../config/db';
 
-export interface AuthRequest extends Request {
-  user?: {
-    id: string;
-    email: string;
-    name: string;
-    role: string;
-  };
+declare global {
+  namespace Express {
+    interface Request {
+      user?: {
+        id: string;
+        email: string;
+        name: string;
+        role: string;
+      };
+    }
+  }
 }
+
+export type AuthRequest = Request;
 
 export const authenticateJWT = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
