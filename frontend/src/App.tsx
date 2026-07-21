@@ -20,6 +20,9 @@ import CertificationsPage from './pages/student/CertificationsPage'
 import CodingProfilesPage from './pages/student/CodingProfilesPage'
 import ResumeBuilderPage from './pages/student/ResumeBuilderPage'
 import EmployabilityPage from './pages/student/EmployabilityPage'
+import CareerSimulatorDashboard from './pages/dashboards/CareerSimulatorDashboard'
+import LearningRoadmap from './pages/dashboards/LearningRoadmap'
+import InterviewReadiness from './pages/dashboards/InterviewReadiness'
 
 function DashboardRouter() {
   const { user } = useAuthStore()
@@ -68,7 +71,10 @@ export default function App() {
             <Route path="/dashboard/certifications" element={<CertificationsPage />} />
             <Route path="/dashboard/coding-profiles" element={<CodingProfilesPage />} />
             <Route path="/dashboard/employability" element={<EmployabilityPage />} />
+            <Route path="/dashboard/simulator" element={<CareerSimulatorDashboard />} />
+            <Route path="/dashboard/roadmap" element={<LearningRoadmap />} />
             <Route path="/dashboard/resume" element={<ResumeBuilderPage />} />
+            <Route path="/dashboard/interviews" element={<InterviewReadiness />} />
 
             {/* Faculty sub-pages */}
             <Route path="/dashboard/students" element={<FacultyDashboard />} />

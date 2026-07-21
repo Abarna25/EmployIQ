@@ -7,10 +7,9 @@ import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
   RadarChart, PolarGrid, PolarAngleAxis, Radar, PieChart, Pie, Cell,
 } from 'recharts'
-import {
-  GraduationCap, Code2, FolderGit2, Award, TrendingUp, Target,
-  Zap, Star, ArrowUpRight, BookOpen,
-} from 'lucide-react'
+import { GraduationCap, Code2, FolderGit2, Award, TrendingUp, Target, Zap, Star, ArrowUpRight, BookOpen, Clock, CheckCircle2, Circle } from 'lucide-react'
+import AchievementShowcase from '../../components/gamification/AchievementShowcase'
+import { api } from '@/services/api'
 
 const stagger = {
   hidden: {},
@@ -25,6 +24,16 @@ export default function StudentDashboard() {
   const { data, isLoading } = useQuery({
     queryKey: ['studentProfile'],
     queryFn: () => studentApi.getProfile().then((r: any) => r.data.data?.profile),
+  })
+
+  const { data: achievements } = useQuery({
+    queryKey: ['achievements'],
+    queryFn: () => api.get('/gamification/achievements').then((r: any) => r.data.data),
+  })
+
+  const { data: goals } = useQuery({
+    queryKey: ['goals'],
+    queryFn: () => api.get('/gamification/goals').then((r: any) => r.data.data),
   })
 
   const profile = data
@@ -102,6 +111,43 @@ export default function StudentDashboard() {
           icon={<Zap className="w-5 h-5" />}
           color="amber"
         />
+      </motion.div>
+
+      {/* Gamification Row */}
+      <motion.div variants={fadeUp} className="grid lg:grid-cols-3 gap-4">
+        <div className="lg:col-span-2">
+          <AchievementShowcase achievements={achievements} />
+        </div>
+        <div className="glass-card p-5">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-sm font-semibold text-white flex items-center gap-2">
+              <Target className="w-4 h-4 text-emerald-400" /> Daily Goals
+            </h3>
+            <span className="text-xs text-slate-400">
+              {goals?.filter((g: any) => g.isCompleted).length || 0}/{goals?.length || 0}
+            </span>
+          </div>
+          <div className="space-y-3">
+            {goals?.slice(0, 4).map((goal: any) => (
+              <div key={goal.id} className="flex items-center gap-3">
+                {goal.isCompleted ? (
+                  <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
+                ) : (
+                  <Circle className="w-4 h-4 text-slate-600 shrink-0" />
+                )}
+                <div>
+                  <p className={`text-sm ${goal.isCompleted ? 'text-slate-500 line-through' : 'text-slate-300'}`}>
+                    {goal.title}
+                  </p>
+                  <p className="text-[10px] text-slate-500">{goal.type}</p>
+                </div>
+              </div>
+            ))}
+            {(!goals || goals.length === 0) && (
+              <p className="text-sm text-slate-500">No active goals today. Time to rest!</p>
+            )}
+          </div>
+        </div>
       </motion.div>
 
       {/* Charts Row */}

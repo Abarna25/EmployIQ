@@ -6,6 +6,7 @@ import {
   LayoutDashboard, User, FolderGit2, Award, Code2, BrainCircuit,
   BarChart3, Users, Briefcase, FileText, Bell, Settings, LogOut,
   ChevronLeft, ChevronRight, Shield, GraduationCap, Building2, Menu, X,
+  Compass, Map, MessageSquare
 } from 'lucide-react'
 
 const roleNavMap: Record<string, Array<{ to: string; icon: any; label: string }>> = {
@@ -18,6 +19,9 @@ const roleNavMap: Record<string, Array<{ to: string; icon: any; label: string }>
     { to: '/dashboard/certifications', icon: Award, label: 'Certifications' },
     { to: '/dashboard/coding-profiles', icon: Code2, label: 'Coding Profiles' },
     { to: '/dashboard/employability', icon: BrainCircuit, label: 'AI Employability' },
+    { to: '/dashboard/simulator', icon: Compass, label: 'Career Simulator' },
+    { to: '/dashboard/roadmap', icon: Map, label: 'Learning Roadmap' },
+    { to: '/dashboard/interviews', icon: MessageSquare, label: 'Interview Readiness' },
     { to: '/dashboard/resume', icon: FileText, label: 'Resume Builder' },
   ],
   FACULTY: [

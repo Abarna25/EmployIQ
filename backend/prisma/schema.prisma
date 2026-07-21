@@ -53,8 +53,10 @@ model User {
   studentProfile StudentProfile?
   jobPostings   JobPosting[]   @relation("RecruiterJobs")
   placementDrives PlacementDrive[] @relation("OfficerDrives")
+  mentees       StudentProfile[] @relation("FacultyMentees")
   notifications Notification[]
   auditLogs     AuditLog[]
+  reportExports ReportExport[]
 }
 
 model RefreshToken {
@@ -85,6 +87,8 @@ model StudentProfile {
   resumeUrl      String?
   atsScore       Float?      @default(0.0)
   tierCategory   String?     @default("Unassigned")
+  mentorId       String?
+  mentor         User?       @relation("FacultyMentees", fields: [mentorId], references: [id], onDelete: SetNull)
   createdAt      DateTime    @default(now())
   updatedAt      DateTime    @updatedAt
 
@@ -97,6 +101,14 @@ model StudentProfile {
   employabilityScores EmployabilityScore[]
   skillGaps       SkillGapAnalysis[]
   jobApplications JobApplication[]
+
+  predictionHistory PredictionHistory[]
+  salaryPredictions SalaryPrediction[]
+  interviewReadiness InterviewReadiness[]
+  learningRoadmaps LearningRoadmap[]
+  achievements     StudentAchievement[]
+  goals            StudentGoal[]
+  activities       StudentActivity[]
 }
 
 model AcademicRecord {
@@ -239,6 +251,7 @@ model JobApplication {
   studentProfileId String
   studentProfile   StudentProfile    @relation(fields: [studentProfileId], references: [id], onDelete: Cascade)
   status           ApplicationStatus @default(APPLIED)
+  aiMatchScore     Float?            @default(0.0)
   appliedAt        DateTime          @default(now())
 
   @@unique([jobPostingId, studentProfileId])
@@ -276,4 +289,98 @@ model AuditLog {
   details   String
   ipAddress String?
   createdAt DateTime @default(now())
+}
+
+model PredictionHistory {
+  id               String         @id @default(uuid())
+  studentProfileId String
+  studentProfile   StudentProfile @relation(fields: [studentProfileId], references: [id], onDelete: Cascade)
+  predictionType   String         // Employability, Salary, SkillGap
+  previousValue    Json
+  newValue         Json
+  createdAt        DateTime       @default(now())
+}
+
+model SalaryPrediction {
+  id               String         @id @default(uuid())
+  studentProfileId String
+  studentProfile   StudentProfile @relation(fields: [studentProfileId], references: [id], onDelete: Cascade)
+  predictedMin     Int
+  predictedMax     Int
+  confidenceScore  Float
+  factors          Json
+  generatedAt      DateTime       @default(now())
+}
+
+model InterviewReadiness {
+  id               String         @id @default(uuid())
+  studentProfileId String
+  studentProfile   StudentProfile @relation(fields: [studentProfileId], references: [id], onDelete: Cascade)
+  readinessScore   Float
+  mockInterviewScore Float?
+  strengths        String[]
+  improvementAreas String[]
+  generatedAt      DateTime       @default(now())
+}
+
+model LearningRoadmap {
+  id               String         @id @default(uuid())
+  studentProfileId String
+  studentProfile   StudentProfile @relation(fields: [studentProfileId], references: [id], onDelete: Cascade)
+  targetRole       String
+  roadmapSteps     Json           // Array of steps (weeks/months)
+  progress         Float          @default(0.0)
+  generatedAt      DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+}
+
+model CompanySkillRequirement {
+  id               String         @id @default(uuid())
+  companyName      String         @unique
+  industry         String
+  requiredSkills   Json           // Array of { skill: string, weight: float }
+  minCgpa          Float          @default(6.0)
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+}
+
+model ReportExport {
+  id          String   @id @default(uuid())
+  requesterId String
+  requester   User     @relation(fields: [requesterId], references: [id], onDelete: Cascade)
+  reportType  String   // 'CANDIDATES', 'PLACEMENT_STATS', etc.
+  filters     Json?
+  downloadUrl String?
+  createdAt   DateTime @default(now())
+}
+
+model StudentAchievement {
+  id               String         @id @default(uuid())
+  studentProfileId String
+  studentProfile   StudentProfile @relation(fields: [studentProfileId], references: [id], onDelete: Cascade)
+  badgeName        String
+  description      String
+  icon             String         @default("Award")
+  earnedAt         DateTime       @default(now())
+}
+
+model StudentGoal {
+  id               String         @id @default(uuid())
+  studentProfileId String
+  studentProfile   StudentProfile @relation(fields: [studentProfileId], references: [id], onDelete: Cascade)
+  title            String
+  type             String         // 'DAILY', 'WEEKLY'
+  isCompleted      Boolean        @default(false)
+  createdAt        DateTime       @default(now())
+  completedAt      DateTime?
+}
+
+model StudentActivity {
+  id               String         @id @default(uuid())
+  studentProfileId String
+  studentProfile   StudentProfile @relation(fields: [studentProfileId], references: [id], onDelete: Cascade)
+  title            String
+  description      String
+  type             String         // 'BADGE_EARNED', 'ATS_IMPROVED', 'JOB_APPLIED'
+  createdAt        DateTime       @default(now())
 }

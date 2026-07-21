@@ -76,4 +76,46 @@ export class AnalyticsController {
       },
     });
   }
+
+  static async exportCandidatesCSV(req: AuthRequest, res: Response) {
+    try {
+      const candidates = await prisma.studentProfile.findMany({
+        include: {
+          user: { select: { name: true, email: true } },
+          studentSkills: { include: { skill: true } },
+        },
+      });
+
+      // Generate CSV manually
+      const headers = ['Name', 'Email', 'Register Number', 'Department', 'Batch Year', 'CGPA', 'Tier', 'ATS Score', 'Skills'];
+      const rows = candidates.map(c => [
+        `"${c.user.name}"`,
+        `"${c.user.email}"`,
+        `"${c.registerNumber}"`,
+        `"${c.department}"`,
+        c.batchYear,
+        c.currentCgpa,
+        `"${c.tierCategory || 'N/A'}"`,
+        c.atsScore || 0,
+        `"${c.studentSkills.map(s => s.skill.name).join(', ')}"`
+      ].join(','));
+
+      const csvContent = [headers.join(','), ...rows].join('\n');
+
+      // Log the export
+      await prisma.reportExport.create({
+        data: {
+          requesterId: req.user!.id,
+          reportType: 'CANDIDATES_CSV',
+          filters: req.query,
+        }
+      });
+
+      res.setHeader('Content-Type', 'text/csv');
+      res.setHeader('Content-Disposition', 'attachment; filename=candidates_export.csv');
+      return res.send(csvContent);
+    } catch (error) {
+      return res.status(500).json({ success: false, message: 'Export failed' });
+    }
+  }
 }

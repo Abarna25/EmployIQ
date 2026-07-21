@@ -9,5 +9,6 @@ router.use(authenticateJWT);
 
 router.get('/placement', authorizeRoles('PLACEMENT_OFFICER', 'ADMIN', 'FACULTY'), AnalyticsController.getPlacementStats);
 router.get('/system', authorizeRoles('ADMIN'), AnalyticsController.getSystemMetrics);
+router.get('/export/candidates', authorizeRoles('PLACEMENT_OFFICER', 'ADMIN'), AnalyticsController.exportCandidatesCSV);
 
 export default router;

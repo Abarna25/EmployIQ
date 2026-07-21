@@ -7,7 +7,7 @@ import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid,
   AreaChart, Area,
 } from 'recharts'
-import { GraduationCap, Building2, TrendingUp, Users, CalendarDays, ArrowUpRight, Target } from 'lucide-react'
+import { GraduationCap, Building2, TrendingUp, Users, CalendarDays, ArrowUpRight, Target, Download } from 'lucide-react'
 
 const fadeUp = { hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0, transition: { duration: 0.4 } } }
 const stagger = { hidden: {}, show: { transition: { staggerChildren: 0.08 } } }
@@ -47,11 +47,31 @@ export default function PlacementOfficerDashboard() {
     )
   }
 
+  const handleExport = async () => {
+    try {
+      const response = await api.get('/analytics/export/candidates', { responseType: 'blob' })
+      const url = window.URL.createObjectURL(new Blob([response.data]))
+      const link = document.createElement('a')
+      link.href = url
+      link.setAttribute('download', 'candidates_export.csv')
+      document.body.appendChild(link)
+      link.click()
+      link.remove()
+    } catch (error) {
+      console.error("Export failed", error)
+    }
+  }
+
   return (
     <motion.div variants={stagger} initial="hidden" animate="show" className="space-y-6">
-      <motion.div variants={fadeUp}>
-        <h1 className="section-title">Placement Analytics</h1>
-        <p className="section-sub">College-wide placement readiness and drive management</p>
+      <motion.div variants={fadeUp} className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
+        <div>
+          <h1 className="section-title">Placement Analytics</h1>
+          <p className="section-sub">College-wide placement readiness and drive management</p>
+        </div>
+        <button onClick={handleExport} className="btn-secondary">
+          <Download className="w-4 h-4" /> Export CSV Report
+        </button>
       </motion.div>
 
       <motion.div variants={fadeUp} className="grid grid-cols-2 lg:grid-cols-4 gap-4">
