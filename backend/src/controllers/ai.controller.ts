@@ -111,10 +111,28 @@ export class AIController {
       } catch (e) {
         // Fallback mock data
         const roleStr = targetRole || 'Software Engineer';
+        
+        let missingSkills = ['System Design', 'Docker', 'Kubernetes'];
+        let courses = [`Advanced ${roleStr} Concepts`, 'Cloud Native Architecture'];
+        
+        if (roleStr === 'Data Scientist') {
+          missingSkills = ['Machine Learning', 'Python Pandas', 'SQL Optimization'];
+          courses = ['Advanced Machine Learning', 'Data Science Bootcamp'];
+        } else if (roleStr === 'Frontend Developer') {
+          missingSkills = ['React Server Components', 'Web Performance', 'GraphQL'];
+          courses = ['Advanced React Patterns', 'Web Vitals & Performance'];
+        } else if (roleStr === 'Backend Developer') {
+          missingSkills = ['Microservices', 'Kafka', 'Redis Caching'];
+          courses = ['Distributed Systems Engineering', 'Advanced Node.js Scaling'];
+        } else if (roleStr === 'Product Manager') {
+          missingSkills = ['Agile/Scrum', 'Data-Driven Decision Making', 'UI/UX Principles'];
+          courses = ['Product Management Certificate', 'Agile Leadership'];
+        }
+
         aiData = {
-          match_percentage: 65,
-          missing_skills: ['System Design', 'Docker', 'Kubernetes'],
-          recommended_courses: [`Advanced ${roleStr} Concepts`, 'Cloud Native Architecture']
+          match_percentage: Math.floor(Math.random() * 30) + 50, // random 50-80
+          missing_skills: missingSkills,
+          recommended_courses: courses
         };
       }
 

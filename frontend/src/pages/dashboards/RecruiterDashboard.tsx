@@ -11,11 +11,13 @@ const stagger = { hidden: {}, show: { transition: { staggerChildren: 0.08 } } }
 
 export default function RecruiterDashboard() {
   const location = useLocation()
-  const [activeTab, setActiveTab] = useState<'talent' | 'jobs'>('talent')
+  const [activeTab, setActiveTab] = useState<'talent' | 'jobs' | 'shortlisted'>('talent')
 
   useEffect(() => {
     if (location.pathname.includes('job-postings')) {
       setActiveTab('jobs')
+    } else if (location.pathname.includes('shortlisted')) {
+      setActiveTab('shortlisted')
     } else {
       setActiveTab('talent')
     }
@@ -117,6 +119,12 @@ export default function RecruiterDashboard() {
             className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${activeTab === 'jobs' ? 'bg-brand-500 text-white' : 'text-slate-400 hover:text-white'}`}
           >
             Job Postings
+          </button>
+          <button 
+            onClick={() => setActiveTab('shortlisted')}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${activeTab === 'shortlisted' ? 'bg-brand-500 text-white' : 'text-slate-400 hover:text-white'}`}
+          >
+            Shortlisted
           </button>
         </div>
       </motion.div>
@@ -282,6 +290,23 @@ export default function RecruiterDashboard() {
                     </div>
                  )}
                </div>
+            </div>
+          </motion.div>
+        )}
+
+        {activeTab === 'shortlisted' && (
+          <motion.div key="shortlisted" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-6">
+            <div className="glass-card p-8 text-center min-h-[400px] flex flex-col items-center justify-center border-emerald-500/20 bg-gradient-to-b from-surface to-emerald-500/5">
+              <div className="w-20 h-20 rounded-full bg-emerald-500/10 flex items-center justify-center mb-6 border border-emerald-500/20 shadow-lg shadow-emerald-500/10">
+                <Target className="w-10 h-10 text-emerald-400" />
+              </div>
+              <h2 className="text-2xl font-bold text-white mb-2">Shortlisted Talent Pool</h2>
+              <p className="text-slate-400 max-w-lg mb-6">
+                All candidates you have shortlisted across various job postings will appear here. Our backend system is synchronizing this global view. For now, view shortlisted candidates directly within individual Job Postings.
+              </p>
+              <button onClick={() => setActiveTab('jobs')} className="btn-primary !bg-emerald-500 hover:!bg-emerald-600">
+                Go to Job Postings
+              </button>
             </div>
           </motion.div>
         )}

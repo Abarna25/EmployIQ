@@ -23,13 +23,15 @@ const apiUsage = [
 
 export default function AdminDashboard() {
   const location = useLocation()
-  const [activeTab, setActiveTab] = useState<'metrics' | 'users' | 'audit'>('metrics')
+  const [activeTab, setActiveTab] = useState<'metrics' | 'users' | 'audit' | 'settings'>('metrics')
 
   useEffect(() => {
     if (location.pathname.includes('users')) {
       setActiveTab('users')
     } else if (location.pathname.includes('audit-logs')) {
       setActiveTab('audit')
+    } else if (location.pathname.includes('settings')) {
+      setActiveTab('settings')
     } else {
       setActiveTab('metrics')
     }
@@ -118,6 +120,12 @@ export default function AdminDashboard() {
             className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${activeTab === 'audit' ? 'bg-brand-500 text-white' : 'text-slate-400 hover:text-white'}`}
           >
             Audit Logs
+          </button>
+          <button 
+            onClick={() => setActiveTab('settings')}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${activeTab === 'settings' ? 'bg-brand-500 text-white' : 'text-slate-400 hover:text-white'}`}
+          >
+            Settings
           </button>
         </div>
       </motion.div>
@@ -280,6 +288,20 @@ export default function AdminDashboard() {
                 ))}
               </tbody>
             </table>
+          </div>
+        </motion.div>
+      )}
+
+      {activeTab === 'settings' && (
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
+          <div className="glass-card p-6 text-center py-20 border-brand-500/20 bg-gradient-to-b from-surface to-brand-500/5">
+            <div className="w-16 h-16 rounded-full bg-brand-500/10 mx-auto flex items-center justify-center mb-4">
+              <Settings className="w-8 h-8 text-brand-400 animate-spin-slow" />
+            </div>
+            <h2 className="text-xl font-bold text-white mb-2">Platform Settings</h2>
+            <p className="text-slate-400 max-w-md mx-auto">
+              Global platform configurations, environment variables, and system preferences can be managed here.
+            </p>
           </div>
         </motion.div>
       )}
