@@ -1,3 +1,5 @@
+import { useState, useEffect } from 'react'
+import { useLocation } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useQuery } from '@tanstack/react-query'
 import { api } from '@/services/api'
@@ -34,6 +36,19 @@ const upcomingDrives = [
 ]
 
 export default function PlacementOfficerDashboard() {
+  const location = useLocation()
+  const [activeTab, setActiveTab] = useState<'analytics' | 'drives' | 'companies'>('analytics')
+
+  useEffect(() => {
+    if (location.pathname.includes('drives')) {
+      setActiveTab('drives')
+    } else if (location.pathname.includes('companies')) {
+      setActiveTab('companies')
+    } else {
+      setActiveTab('analytics')
+    }
+  }, [location.pathname])
+
   const { data, isLoading } = useQuery({
     queryKey: ['placementStats'],
     queryFn: () => api.get('/analytics/placement').then((r: any) => r.data.data),
@@ -66,13 +81,38 @@ export default function PlacementOfficerDashboard() {
     <motion.div variants={stagger} initial="hidden" animate="show" className="space-y-6">
       <motion.div variants={fadeUp} className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
         <div>
-          <h1 className="section-title">Placement Analytics</h1>
+          <h1 className="section-title">Placement Command Center</h1>
           <p className="section-sub">College-wide placement readiness and drive management</p>
         </div>
-        <button onClick={handleExport} className="btn-secondary">
-          <Download className="w-4 h-4" /> Export CSV Report
-        </button>
+        <div className="flex bg-surface p-1 rounded-xl border border-surface-border">
+          <button 
+            onClick={() => setActiveTab('analytics')}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${activeTab === 'analytics' ? 'bg-brand-500 text-white' : 'text-slate-400 hover:text-white'}`}
+          >
+            Analytics
+          </button>
+          <button 
+            onClick={() => setActiveTab('drives')}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${activeTab === 'drives' ? 'bg-brand-500 text-white' : 'text-slate-400 hover:text-white'}`}
+          >
+            Drives
+          </button>
+          <button 
+            onClick={() => setActiveTab('companies')}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${activeTab === 'companies' ? 'bg-brand-500 text-white' : 'text-slate-400 hover:text-white'}`}
+          >
+            Companies
+          </button>
+        </div>
       </motion.div>
+
+      {activeTab === 'analytics' && (
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
+          <div className="flex justify-end">
+            <button onClick={handleExport} className="btn-secondary">
+              <Download className="w-4 h-4" /> Export CSV Report
+            </button>
+          </div>
 
       <motion.div variants={fadeUp} className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard title="Total Students" value={data?.totalStudents || 0} subtitle="Eligible for placement" icon={<GraduationCap className="w-5 h-5" />} color="brand" />
@@ -162,6 +202,57 @@ export default function PlacementOfficerDashboard() {
           </div>
         </motion.div>
       </div>
+      </motion.div>
+      )}
+
+      {activeTab === 'drives' && (
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
+          <div className="glass-card p-6">
+            <h2 className="text-lg font-bold text-white mb-6">Manage Placement Drives</h2>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {upcomingDrives.map((d) => (
+                <div key={d.company} className="bg-surface border border-surface-border rounded-xl p-5 hover:border-brand-500/30 transition-colors">
+                  <div className="flex justify-between items-start mb-4">
+                    <div className="w-12 h-12 rounded-xl bg-brand-500/10 flex items-center justify-center">
+                      <Building2 className="w-6 h-6 text-brand-500" />
+                    </div>
+                    <span className={`badge ${d.tier === 'Tier 1' ? 'badge-success' : d.tier === 'Tier 2' ? 'badge-info' : 'badge-warning'}`}>
+                      {d.tier}
+                    </span>
+                  </div>
+                  <h3 className="text-lg font-bold text-white mb-1">{d.company}</h3>
+                  <p className="text-sm text-brand-400 font-medium mb-3">{d.positions}</p>
+                  
+                  <div className="space-y-2 mb-4">
+                    <div className="flex items-center gap-2 text-xs text-slate-400">
+                      <CalendarDays className="w-4 h-4" /> Date: <span className="text-white">{d.date}</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-xs text-slate-400">
+                      <Target className="w-4 h-4" /> Min CGPA: <span className="text-white">{d.minCgpa}</span>
+                    </div>
+                  </div>
+                  
+                  <button className="w-full btn-secondary">View Details</button>
+                </div>
+              ))}
+            </div>
+          </div>
+        </motion.div>
+      )}
+
+      {activeTab === 'companies' && (
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
+          <div className="glass-card p-6 text-center py-20 border-violet-500/20 bg-gradient-to-b from-surface to-violet-500/5">
+            <div className="w-16 h-16 rounded-full bg-violet-500/10 mx-auto flex items-center justify-center mb-4">
+              <Building2 className="w-8 h-8 text-violet-400" />
+            </div>
+            <h2 className="text-xl font-bold text-white mb-2">Partner Companies Directory</h2>
+            <p className="text-slate-400 max-w-md mx-auto">
+              Directory of all visiting companies and historical placement data is currently synchronizing.
+            </p>
+          </div>
+        </motion.div>
+      )}
     </motion.div>
   )
 }

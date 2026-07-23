@@ -21,11 +21,15 @@ const skillValidations = [
 
 export default function FacultyDashboard() {
   const location = useLocation()
-  const [activeTab, setActiveTab] = useState<'overview' | 'approvals'>('overview')
+  const [activeTab, setActiveTab] = useState<'overview' | 'approvals' | 'students' | 'analytics'>('overview')
 
   useEffect(() => {
     if (location.pathname.includes('approvals')) {
       setActiveTab('approvals')
+    } else if (location.pathname.includes('students')) {
+      setActiveTab('students')
+    } else if (location.pathname.includes('analytics')) {
+      setActiveTab('analytics')
     } else {
       setActiveTab('overview')
     }
@@ -71,6 +75,12 @@ export default function FacultyDashboard() {
             Overview
           </button>
           <button 
+            onClick={() => setActiveTab('students')}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${activeTab === 'students' ? 'bg-brand-500 text-white' : 'text-slate-400 hover:text-white'}`}
+          >
+            My Students
+          </button>
+          <button 
             onClick={() => setActiveTab('approvals')}
             className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 ${activeTab === 'approvals' ? 'bg-brand-500 text-white' : 'text-slate-400 hover:text-white'}`}
           >
@@ -80,6 +90,12 @@ export default function FacultyDashboard() {
                 {metrics.pendingVerifications}
               </span>
             )}
+          </button>
+          <button 
+            onClick={() => setActiveTab('analytics')}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${activeTab === 'analytics' ? 'bg-brand-500 text-white' : 'text-slate-400 hover:text-white'}`}
+          >
+            Analytics
           </button>
         </div>
       </motion.div>
@@ -91,7 +107,7 @@ export default function FacultyDashboard() {
         <StatCard title="Avg Mentee ATS" value="78%" subtitle="+5% from last month" icon={<Award className="w-5 h-5" />} color="cyan" />
       </motion.div>
 
-      {activeTab === 'overview' ? (
+      {activeTab === 'overview' && (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="grid lg:grid-cols-2 gap-4">
           <div className="glass-card p-5">
             <h3 className="text-sm font-semibold text-white mb-4 flex items-center gap-2">
@@ -141,7 +157,9 @@ export default function FacultyDashboard() {
             </div>
           </div>
         </motion.div>
-      ) : (
+      )}
+
+      {activeTab === 'approvals' && (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="glass-card p-5">
           <h3 className="text-sm font-semibold text-white mb-4 flex items-center gap-2">
             <CheckCircle className="w-4 h-4 text-emerald-400" /> Pending Skill Verifications
@@ -183,6 +201,72 @@ export default function FacultyDashboard() {
                 </div>
               ))
             )}
+          </div>
+        </motion.div>
+      )}
+
+      {activeTab === 'students' && (
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="glass-card p-5">
+          <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+            <Users className="w-5 h-5 text-brand-400" /> My Mentees
+          </h3>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-surface-border text-slate-500">
+                  <th className="text-left py-3 font-medium">Student Name</th>
+                  <th className="text-left py-3 font-medium">Department</th>
+                  <th className="text-left py-3 font-medium">CGPA</th>
+                  <th className="text-left py-3 font-medium">ATS Score</th>
+                  <th className="text-left py-3 font-medium">Tier</th>
+                </tr>
+              </thead>
+              <tbody>
+                {menteesLoading ? (
+                  <tr><td colSpan={5} className="text-center py-8 text-slate-500">Loading mentees...</td></tr>
+                ) : mentees?.length === 0 ? (
+                  <tr><td colSpan={5} className="text-center py-8 text-slate-500">No mentees assigned.</td></tr>
+                ) : (
+                  mentees?.map((m: any) => (
+                    <tr key={m.id} className="border-b border-surface-border/50 hover:bg-surface-hover transition-colors">
+                      <td className="py-3 flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-gradient-brand flex items-center justify-center text-xs font-bold text-white">
+                          {m.user.name.charAt(0)}
+                        </div>
+                        <span className="text-white font-medium">{m.user.name}</span>
+                      </td>
+                      <td className="py-3 text-slate-400">{m.department || 'N/A'}</td>
+                      <td className="py-3 text-slate-400">{m.currentCgpa}</td>
+                      <td className="py-3 text-emerald-400 font-medium">{m.atsScore || 0}%</td>
+                      <td className="py-3">
+                        <span className={`badge ${m.tierCategory === 'Tier 1' ? 'badge-success' : m.tierCategory === 'Tier 2' ? 'badge-info' : 'badge-warning'}`}>
+                          {m.tierCategory || 'Unassigned'}
+                        </span>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </motion.div>
+      )}
+
+      {activeTab === 'analytics' && (
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
+          <div className="glass-card p-5">
+            <h3 className="text-lg font-bold text-white mb-6">Mentorship Analytics</h3>
+            <div className="h-[400px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={skillValidations}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
+                  <XAxis dataKey="month" tick={{ fill: '#94a3b8', fontSize: 11 }} axisLine={false} />
+                  <YAxis tick={{ fill: '#94a3b8', fontSize: 11 }} axisLine={false} />
+                  <Tooltip contentStyle={{ backgroundColor: '#16162a', border: '1px solid #2a2a45', borderRadius: 12, fontSize: 12 }} />
+                  <Line type="monotone" dataKey="validated" stroke="#10b981" strokeWidth={3} dot={{ fill: '#10b981', r: 5 }} />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
           </div>
         </motion.div>
       )}
